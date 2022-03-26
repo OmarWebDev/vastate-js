@@ -50,7 +50,7 @@ HTML:
     <li vastate-print state="person" obj="age">{#VALUE#}</li>
 
     <!-- Male -->
-    <li vastate-print state="person" obj="male">{#VALUE#}</li>
+    <li vastate-print state="person" obj="gender">{#VALUE#}</li>
 </ul>
 ```
 
