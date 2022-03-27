@@ -1,7 +1,7 @@
 {
   "name": "vastate-js",
   "entry": "index.js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "MIT",
   "scripts": {
     "build": "webpack && tsc src/vastate.ts --target es6",
