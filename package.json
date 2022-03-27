@@ -1,10 +1,10 @@
 {
   "name": "vastate-js",
   "entry": "index.js",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack && tsc src/vastate.ts --target es6",
     "dev": "webpack --config webpack.config.development.js --watch"
   },
   "devDependencies": {
