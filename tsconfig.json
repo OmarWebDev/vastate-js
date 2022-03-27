@@ -1,17 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "useDefineForClassFields": true,
-    "module": "es6",
-    "moduleResolution": "Node",
-    "strict": true,
+    "outDir": "./dist/",
+    "noImplicitAny": true,
     "sourceMap": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "noEmit": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-  },
-  "include": ["src"]
+    "module": "es6",
+    "target": "es6",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node"
+  }
 }

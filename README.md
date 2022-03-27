@@ -7,6 +7,11 @@ What you need to do is to link javascript file with html
 ```html
 <script src="path/to/vastatejs/dist/vastate.js"></script>
 ```
+Or you can use minified version of vastatejs
+
+```html
+<script src="path/to/vastatejs/dist/vastate.min.js"></script>
+```
 ## Usage
 ---
 Now to define a state you will need to use Vastate object which take 2 arguments state name and value
@@ -124,6 +129,50 @@ console.log(title.get()) // Hello World
 title.set('Hello Vastate') // set new value for the state
 console.log(title.get()) // Hello Vastate
 ```
+## Preloader
+If you are using Ajax/Axios/Fetch API/XMLHttpRequest and want to show a preloader to the user until the request is complete.
+
+Vastate JS Provide you two method to do this 
+
+- setLoadingTemplate(template: string) - this function will take a HTML Template that will be used when loading is set to true
+- setLoading(value: boolean) - this function will set loader state to true or false
+
+For example:
+
+JS: 
+```JS
+    Vastate.setLoadingTemplate('<h1>Loading</h1>') // set loading template
+    const users = new Vastate('users', [])
+    users.setLoading(true) // set loading state to true
+
+    // simple timeout function
+    setTimeout(_ => {
+        
+        users.setLoading( false )
+        users.set([{
+            name: 'test'
+        },{
+            name: 'test'
+        },{
+            name: 'test'
+        },{
+            name: 'test'
+        },])
+    }, 3000)
+```
+
+HTML:
+```HTML
+    <!-- This will print Loading in h1 tag and after 3 secconds will print users list -->
+    <ul vastate-each  state="users">
+        <li hidden vastate-print obj="name"><span>{#VALUE#}</span></li>
+    </ul>
+```
+
+Notes
+- when using preloading you should use hidden attribute with vastate-print if you didn't you will see `{#VALUE#}` printed in the browser with the preloader
+- Preloader will only work if the state has contains empty array
+- Preloader won't work good when using vastate-print with state that is not empty
 ## Contributing
 ---
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

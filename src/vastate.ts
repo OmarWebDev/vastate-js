@@ -3,13 +3,12 @@
  * Version: 1.0
  * License: MIT
  */
-
-const placeholder = '{#VALUE#}'
-type vstateValue  = string | number | any[] | boolean | null
+type vastateValue  = string | number | any[] | boolean | null
 
 class Vastate {
-    private value: vstateValue
-    private name: string
+    private value: vastateValue
+    private placeholder = '{#VALUE#}'
+    private readonly name: string
     private isLoading: boolean = false
     private static loadingTemplate: string
 
@@ -22,7 +21,7 @@ class Vastate {
         this.loadingTemplate = loadingTemplate
     }
 
-    constructor(name: string, value: vstateValue) {
+    constructor(name: string, value: vastateValue) {
         this.value = value
         this.name = name
         this.reloadDom()
@@ -32,7 +31,7 @@ class Vastate {
         return this.value
     }
 
-    set(value: vstateValue) {
+    set(value: vastateValue) {
         this.value = value
         this.reloadDom()
     }
@@ -42,21 +41,27 @@ class Vastate {
         const vastatePrints = document.querySelectorAll(`vastate-print[state="${this.name}"], [vastate-print][state="${this.name}"]`)
         vastatePrints.forEach(vastatePrint => {
 
-            if (vastatePrint.hasAttribute('obj')) {
-                if (vastatePrint.hasAttribute('html')) {
-                    // @ts-ignore
-                    vastatePrint.innerHTML = vastatePrint.innerHTML.split(placeholder).join(this.get()[vastatePrint.getAttribute('obj')])
-                } else {
-                    // @ts-ignore
-                    vastatePrint.textContent = vastatePrint.textContent.split(placeholder).join(this.get()[vastatePrint.getAttribute('obj')])
-                }
+            if (this.isLoading) {
+                vastatePrint.innerHTML += Vastate.loadingTemplate
             } else {
-                if (vastatePrint.hasAttribute('html')) {
-                    // @ts-ignore
-                    vastatePrint.innerHTML = vastatePrint.innerHTML.split(placeholder).join(this.get())
+                vastatePrint.innerHTML = vastatePrint.innerHTML.split( Vastate.loadingTemplate ).join( '' )
+
+                if ( vastatePrint.hasAttribute( 'obj' ) ) {
+                    if ( vastatePrint.hasAttribute( 'html' ) ) {
+                        // @ts-ignore
+                        vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.placeholder ).join( this.get()[vastatePrint.getAttribute( 'obj' )] )
+                    } else {
+                        // @ts-ignore
+                        vastatePrint.textContent = vastatePrint.textContent.split( this.placeholder ).join( this.get()[vastatePrint.getAttribute( 'obj' )] )
+                    }
                 } else {
-                    // @ts-ignore
-                    vastatePrint.textContent = vastatePrint.textContent.split(placeholder).join(this.get())
+                    if ( vastatePrint.hasAttribute( 'html' ) ) {
+                        // @ts-ignore
+                        vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.placeholder ).join( this.get() )
+                    } else {
+                        // @ts-ignore
+                        vastatePrint.textContent = vastatePrint.textContent.split( this.placeholder ).join( this.get() )
+                    }
                 }
             }
         })
@@ -81,7 +86,6 @@ class Vastate {
                 }
                 return
             }
-
             stateValueArr?.forEach(val => {
                 const firstChild = document.querySelector(`vastate-each[state="${this.name}"] > *, [vastate-each][state="${this.name}"] > *`)
                 const template: HTMLElement | undefined = firstChild?.cloneNode(true) as HTMLElement
@@ -90,12 +94,12 @@ class Vastate {
 
                 if (template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute('vastate-print')) {
                     template.removeAttribute('hidden')
-                    template.innerHTML = template.innerHTML?.split(placeholder).join(typeof val === 'object' ? val[template.getAttribute('obj') ?? 0] : val)
+                    template.innerHTML = template.innerHTML?.split(this.placeholder).join(typeof val === 'object' ? val[template.getAttribute('obj') ?? 0] : val)
                 } else {
                     template?.querySelectorAll('vastate-print, [vastate-print]').forEach(pr => {
                         pr.removeAttribute('hidden')
                         // @ts-ignore
-                        pr.innerHTML = pr.innerHTML?.split(placeholder).join(typeof val === 'object' ? val[pr.getAttribute('obj') ?? 0] : val)
+                        pr.innerHTML = pr.innerHTML?.split(this.placeholder).join(typeof val === 'object' ? val[pr.getAttribute('obj') ?? 0] : val)
 
                     })
                 }
@@ -104,3 +108,11 @@ class Vastate {
         })
     }
 }
+declare global {
+    interface Window {
+        Vastate: any
+    }
+}
+
+window.Vastate = Vastate
+export default Vastate
