@@ -91,9 +91,8 @@ class Vastate {
                 const template: HTMLElement | undefined = firstChild?.cloneNode(true) as HTMLElement
 
                 firstChild?.setAttribute('hidden', 'true')
-
+                template.removeAttribute('hidden')
                 if (template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute('vastate-print')) {
-                    template.removeAttribute('hidden')
                     template.innerHTML = template.innerHTML?.split(this.placeholder).join(typeof val === 'object' ? val[template.getAttribute('obj') ?? 0] : val)
                 } else {
                     template?.querySelectorAll('vastate-print, [vastate-print]').forEach(pr => {

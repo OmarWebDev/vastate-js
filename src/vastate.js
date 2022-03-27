@@ -75,8 +75,8 @@ class Vastate {
                 const firstChild = document.querySelector(`vastate-each[state="${this.name}"] > *, [vastate-each][state="${this.name}"] > *`);
                 const template = firstChild === null || firstChild === void 0 ? void 0 : firstChild.cloneNode(true);
                 firstChild === null || firstChild === void 0 ? void 0 : firstChild.setAttribute('hidden', 'true');
+                template.removeAttribute('hidden');
                 if (template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute('vastate-print')) {
-                    template.removeAttribute('hidden');
                     template.innerHTML = (_a = template.innerHTML) === null || _a === void 0 ? void 0 : _a.split(this.placeholder).join(typeof val === 'object' ? val[(_b = template.getAttribute('obj')) !== null && _b !== void 0 ? _b : 0] : val);
                 }
                 else {
