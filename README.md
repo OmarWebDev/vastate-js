@@ -12,6 +12,24 @@ Or you can use minified version of vastatejs
 ```html
 <script src="path/to/vastatejs/dist/vastate.min.js"></script>
 ```
+Or you can use npm/yarn
+
+NPM:
+```bash
+npm install vastate-js
+```
+
+Yarn:
+```bash
+yarn add vastate-js
+```
+JS:
+```js
+import Vastate from 'vastate-js'
+
+// Some Code
+```
+
 ## Usage
 ---
 Now to define a state you will need to use Vastate object which take 2 arguments state name and value
