@@ -32,21 +32,29 @@ class Vastate {
                 if (vastatePrint.hasAttribute('obj')) {
                     if (vastatePrint.hasAttribute('html')) {
                         // @ts-ignore
-                        vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.placeholder).join(this.get()[vastatePrint.getAttribute('obj')]);
+                        vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.placeholder).join('<vprint>' + this.get()[vastatePrint.getAttribute('obj')] + '</vprint>');
+                        // @ts-ignore
+                        vastatePrint.querySelectorAll('vprint').forEach(e => e.innerHTML = this.get()[vastatePrint.getAttribute('obj')]);
                     }
                     else {
                         // @ts-ignore
-                        vastatePrint.textContent = vastatePrint.textContent.split(this.placeholder).join(this.get()[vastatePrint.getAttribute('obj')]);
+                        vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.placeholder).join('<vprint>' + this.get()[vastatePrint.getAttribute('obj')] + '</vprint>');
+                        // @ts-ignore
+                        vastatePrint.querySelectorAll('vprint').forEach(e => e.textContent = this.get()[vastatePrint.getAttribute('obj')]);
                     }
                 }
                 else {
                     if (vastatePrint.hasAttribute('html')) {
                         // @ts-ignore
-                        vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.placeholder).join(this.get());
+                        vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.placeholder).join('<vprint>' + this.get() + '</vprint>');
+                        // @ts-ignore
+                        vastatePrint.querySelectorAll('vprint').forEach(e => e.innerHTML = this.get());
                     }
                     else {
                         // @ts-ignore
-                        vastatePrint.textContent = vastatePrint.textContent.split(this.placeholder).join(this.get());
+                        vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.placeholder).join('<vprint>' + this.get() + '</vprint>');
+                        // @ts-ignore
+                        vastatePrint.querySelectorAll('vprint').forEach(e => e.textContent = this.get());
                     }
                 }
             }
