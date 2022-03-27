@@ -30,6 +30,10 @@ import Vastate from 'vastate-js'
 // Some Code
 ```
 
+Or you can install it via CDN 
+```HTML
+<script src="https://unpkg.com/vastate-js@latest/dist/vastate.min.js"></script>
+```
 ## Usage
 ---
 Now to define a state you will need to use Vastate object which take 2 arguments state name and value
