@@ -6,38 +6,104 @@
 type vastateValue  = string | number | any[] | boolean | null
 
 class Vastate {
+
+    /**
+     * State value
+     *
+     * @private
+     */
     private value: vastateValue
+    /**
+     * Placeholder that will be replaced with
+     * State value when showed in HTML
+     *
+     * @private
+     */
     private placeholder: any = '{#VALUE#}'
+    /**
+     * State Name
+     *
+     * @private
+     */
     private readonly name: string
+    /**
+     * Loading status
+     *
+     * @private
+     */
     private isLoading: boolean = false
+    /**
+     * Loading Template
+     *
+     * @private
+     */
     private static loadingTemplate: string
 
+    /**
+     * Set loading status
+     *
+     * @param loading
+     */
     setLoading(loading: boolean) {
         this.isLoading = loading
         this.reloadDom()
     }
 
+    /**
+     * Set loading template
+     *
+     * @param loadingTemplate
+     */
     static setLoadingTemplate(loadingTemplate: string) {
         this.loadingTemplate = loadingTemplate
     }
 
+    /**
+     * initialize new state
+     *
+     * @param name
+     * @param value
+     */
     constructor(name: string, value: vastateValue) {
         this.value = value
         this.name = name
         this.reloadDom()
     }
 
+    /**
+     * Get current state value
+     */
     get() {
         return this.value
     }
 
+    /**
+     * Set state value
+     *
+     * @param value
+     */
     set(value: vastateValue) {
         this.value = value
         this.reloadDom()
     }
 
+    /**
+     * Reload the DOM when value or loading state is changed
+     *
+     * @private
+     */
     private reloadDom() {
-        const vastateEachs = document.querySelectorAll(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`)
+        this.reloadVastatePrints()
+        this.reloadVastateEachs()
+    }
+
+    /**
+     * Reload all vastate-print tags/attribute
+     * in the DOM
+     *
+     * @private
+     */
+    private reloadVastatePrints() {
         const vastatePrints = document.querySelectorAll(`vastate-print[state="${this.name}"], [vastate-print][state="${this.name}"]`)
         vastatePrints.forEach(vastatePrint => {
 
@@ -73,7 +139,16 @@ class Vastate {
                 }
             }
         })
+    }
 
+    /**
+     * Reload all vastate-each tags/attribute
+     * in the DOM
+     *
+     * @private
+     */
+    private reloadVastateEachs() {
+        const vastateEachs = document.querySelectorAll(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`)
         vastateEachs.forEach(vastateEach => {
             while (vastateEach.children.length > 1) {
                 // @ts-ignore
@@ -115,11 +190,15 @@ class Vastate {
         })
     }
 }
+// extend window interface
 declare global {
     interface Window {
         Vastate: any
     }
 }
 
+// apply vastate class to window so it can be
+// called globally via 'window.Vastate' or Vastate
 window.Vastate = Vastate
+
 export default Vastate
