@@ -83,39 +83,39 @@ HTML:
 </ul>
 ```
 
-[comment]: <> (### Print HTML State)
+### Print HTML State
 
-[comment]: <> (Now if you have a state that contain HTML and tried to print it you will see that it will print html in plain text to fix this you will need to pass html attribute this will tell vastate that the state contain html code, for example)
+Now if you have a state that contain HTML and tried to print it you will see that it will print html in plain text to fix this you will need to pass html attribute this will tell vastate that the state contain html code, for example
 
-[comment]: <> (JS:)
+JS:
 
-[comment]: <> (```js)
+```js
 
-[comment]: <> (const title = new Vastate&#40;'title', '<h1>Hello World!</h1>'&#41;)
+const title = new Vastate('title', '<h1>Hello World!</h1>')
 
-[comment]: <> (```)
+```
 
-[comment]: <> (HTML:)
+HTML:
 
-[comment]: <> (```html)
+```html
 
-[comment]: <> (<!-- This will print <h1>Hello World!</h1> -->)
+<!-- This will print <h1>Hello World!</h1> -->
 
-[comment]: <> (<main vastate-print state="title">)
+<main vastate-print state="title">
 
-[comment]: <> (    {#VALUE#})
+    {#VALUE#}
 
-[comment]: <> (</main>)
+</main>
 
-[comment]: <> (<!-- This will print Hello World! in h1 tag -->)
+<!-- This will print Hello World! in h1 tag -->
 
-[comment]: <> (<main vastate-print state="title" html>)
+<main vastate-print state="title" html>
 
-[comment]: <> (    {#VALUE#})
+    {#VALUE#}
 
-[comment]: <> (</main>)
+</main>
 
-[comment]: <> (```)
+```
 ## Loop a state
 ---
 Now you have an array of objects that contain some data and you want to loop and print that array. to do it using vastate you will need to use either vastate-each tag or vastate-each attribute and pass the state attribute with the state name, For example

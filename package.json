@@ -1,11 +1,15 @@
 {
   "name": "vastate-js",
   "entry": "index.js",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "MIT",
   "scripts": {
     "build": "webpack && tsc src/vastate.ts --target es6",
     "dev": "webpack --config webpack.config.development.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OmarWebDev/vastate-js.git"
   },
   "devDependencies": {
     "ts-loader": "^9.2.8",
