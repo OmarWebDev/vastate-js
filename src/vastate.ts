@@ -3,10 +3,9 @@
  * Version: 1.0
  * License: MIT
  */
-type vastateValue  = string | number | any[] | boolean | null
+type vastateValue = string | number | any[] | boolean | null
 
 class Vastate {
-
     /**
      * State value
      *
@@ -20,6 +19,12 @@ class Vastate {
      * @private
      */
     private placeholder: any = '{#VALUE#}'
+    /**
+     * State previousValue
+     *
+     * @private
+     */
+    private previousValue: vastateValue = this.placeholder
     /**
      * State Name
      *
@@ -43,10 +48,12 @@ class Vastate {
      * Set loading status
      *
      * @param loading
+     * @return this
      */
-    setLoading(loading: boolean) {
+    setLoading( loading: boolean ): this {
         this.isLoading = loading
         this.reloadDom()
+        return this
     }
 
     /**
@@ -54,7 +61,7 @@ class Vastate {
      *
      * @param loadingTemplate
      */
-    static setLoadingTemplate(loadingTemplate: string) {
+    static setLoadingTemplate( loadingTemplate: string ) {
         this.loadingTemplate = loadingTemplate
     }
 
@@ -64,7 +71,8 @@ class Vastate {
      * @param name
      * @param value
      */
-    constructor(name: string, value: vastateValue) {
+    constructor( name: string, value: vastateValue ) {
+
         this.value = value
         this.name = name
         this.reloadDom()
@@ -81,10 +89,15 @@ class Vastate {
      * Set state value
      *
      * @param value
+     * @return this
      */
-    set(value: vastateValue) {
+    set( value: vastateValue ): this {
+        if ( this.value != this.previousValue )
+            this.previousValue = this.value
         this.value = value
         this.reloadDom()
+        console.log( this.value, this.previousValue )
+        return this
     }
 
     /**
@@ -104,41 +117,20 @@ class Vastate {
      * @private
      */
     private reloadVastatePrints() {
-        const vastatePrints = document.querySelectorAll(`vastate-print[state="${this.name}"], [vastate-print][state="${this.name}"]`)
-        vastatePrints.forEach(vastatePrint => {
-
-            if (this.isLoading) {
+        const vastatePrints = document.querySelectorAll( `vastate-print[state="${ this.name }"], [vastate-print][state="${ this.name }"]` )
+        vastatePrints.forEach( ( vastatePrint: HTMLElement ) => {
+            if ( this.isLoading ) {
                 vastatePrint.innerHTML += Vastate.loadingTemplate
             } else {
                 vastatePrint.innerHTML = vastatePrint.innerHTML.split( Vastate.loadingTemplate ).join( '' )
+                if ( vastatePrint.hasAttribute( 'html' ) ) {
 
-                if ( vastatePrint.hasAttribute( 'obj' ) ) {
-                    if ( vastatePrint.hasAttribute( 'html' ) ) {
-                        // @ts-ignore
-                        vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.placeholder ).join( '<vprint>' + this.get()[vastatePrint.getAttribute( 'obj' )] + '</vprint>' )
-                        // @ts-ignore
-                        vastatePrint.querySelectorAll('vprint').forEach(e => e.innerHTML = this.get()[vastatePrint.getAttribute( 'obj' )] )
-                    } else {
-                        // @ts-ignore
-                        vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.placeholder ).join('<vprint>' + this.get()[vastatePrint.getAttribute( 'obj' )] + '</vprint>' )
-                        // @ts-ignore
-                        vastatePrint.querySelectorAll('vprint').forEach(e => e.textContent = this.get()[vastatePrint.getAttribute( 'obj' )] )
-                    }
+                    vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.previousValue.toString() ).join( this.getVastatePrintValue( vastatePrint ) )
                 } else {
-                    if ( vastatePrint.hasAttribute( 'html' ) ) {
-                        // @ts-ignore
-                        vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.placeholder ).join( '<vprint>' + this.get() + '</vprint>' )
-                        // @ts-ignore
-                        vastatePrint.querySelectorAll('vprint').forEach(e => e.innerHTML = this.get())
-                    } else {
-                        // @ts-ignore
-                        vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.placeholder ).join( '<vprint>' + this.get() + '</vprint>' )
-                        // @ts-ignore
-                        vastatePrint.querySelectorAll('vprint').forEach(e => e.textContent = this.get())
-                    }
+                    vastatePrint.textContent = vastatePrint.textContent.split( this.previousValue.toString() ).join( this.getVastatePrintValue( vastatePrint ) )
                 }
             }
-        })
+        } )
     }
 
     /**
@@ -148,48 +140,78 @@ class Vastate {
      * @private
      */
     private reloadVastateEachs() {
-        const vastateEachs = document.querySelectorAll(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`)
-        vastateEachs.forEach(vastateEach => {
-            while (vastateEach.children.length > 1) {
-                // @ts-ignore
-                vastateEach.removeChild(vastateEach.lastElementChild)
+        const vastateEachs = document.querySelectorAll( `vastate-each[state="${ this.name }"], [vastate-each][state="${ this.name }"]` )
+        vastateEachs.forEach( ( vastateEach: HTMLElement ) => {
+            while ( vastateEach.children.length > 1 ) {
+                vastateEach.removeChild( vastateEach.lastElementChild )
             }
+            const stateValueArr: any = Array.isArray( this.get() ) ? this.get() : []
 
-            // @ts-ignore
-            const stateValueArr: any[] = Array.isArray(this.get()) ? this.get() : []
-
-            if (stateValueArr.length < 1) {
-                if (!this.isLoading) {
-                    while (vastateEach.children.length > 1) {
-                        // @ts-ignore
-                        vastateEach.removeChild(vastateEach.lastElementChild)
-                    }
-                } else {
-                    vastateEach.innerHTML += Vastate.loadingTemplate
+            if ( stateValueArr.length < 1 ) {
+                if ( ! this.isLoading ) {
+                    // remove preloader from the page
+                    vastateEach.innerHTML = vastateEach.innerHTML.split( Vastate.loadingTemplate ).join( '' )
+                    // remove all children except first one
+                    vastateEach.querySelectorAll( '* + *' ).forEach( ( e: HTMLElement ) => e.remove() )
+                    return
                 }
+                vastateEach.innerHTML += Vastate.loadingTemplate
                 return
             }
-            stateValueArr?.forEach(val => {
-                const firstChild = document.querySelector(`vastate-each[state="${this.name}"] > *, [vastate-each][state="${this.name}"] > *`)
-                const template: HTMLElement | undefined = firstChild?.cloneNode(true) as HTMLElement
+            stateValueArr?.forEach( ( val: any ) => {
+                const firstChild = document.querySelector( `vastate-each[state="${ this.name }"] > *, [vastate-each][state="${ this.name }"] > *` )
+                const template: HTMLElement | undefined = firstChild?.cloneNode( true ) as HTMLElement
 
-                firstChild?.setAttribute('hidden', 'true')
-                template.removeAttribute('hidden')
-                if (template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute('vastate-print')) {
-                    template.innerHTML = template.innerHTML?.split(this.placeholder).join(typeof val === 'object' ? val[template.getAttribute('obj') ?? 0] : val)
+                firstChild?.setAttribute( 'hidden', 'true' )
+                template.removeAttribute( 'hidden' )
+                if ( template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute( 'vastate-print' ) ) {
+                    template.innerHTML = template.innerHTML?.split( this.placeholder ).join( this.getVastatePrintValue( template, val ) )
                 } else {
-                    template?.querySelectorAll('vastate-print, [vastate-print]').forEach(pr => {
-                        pr.removeAttribute('hidden')
-                        // @ts-ignore
-                        pr.innerHTML = pr.innerHTML?.split(this.placeholder).join(typeof val === 'object' ? val[pr.getAttribute('obj') ?? 0] : val)
+                    template?.querySelectorAll( 'vastate-print, [vastate-print]' ).forEach( ( pr: HTMLElement ) => {
+                        pr.removeAttribute( 'hidden' )
+                        pr.innerHTML = pr.innerHTML?.split( this.placeholder ).join( this.getVastatePrintValue( pr, val ) )
 
-                    })
+                    } )
                 }
-                vastateEach.appendChild(template)
-            })
-        })
+                vastateEach.appendChild( template )
+            } )
+        } )
+    }
+
+    /**
+     * Gets the value that will be printed in Vastate print
+     *
+     * @param vastatePrint
+     * @param value
+     * @private
+     */
+    private getVastatePrintValue( vastatePrint: HTMLElement, value = this.get() ) {
+        if ( typeof value === "object" && ! vastatePrint.hasAttribute( 'obj' ) ) {
+            document.body.style.background = "hsla(0,0%,90%,1)"
+            document.body.style.color = "hsla(0,0%,10%,.9)"
+            document.body.style.fontFamily = "arial"
+            document.body.innerHTML = `
+                
+                <h1>Vastate JS Error</h1>
+                <strong>You are trying to print an object without passing obj attribute in vastate print</strong>
+                <br>
+                <strong>Helpful Info:</strong>
+                <br>
+                <br>
+                <pre  style="  background: #262626; color:white;
+  font-weight: bold;
+  padding: 1rem;
+  border-radius: 6px;">
+                <code>${ vastatePrint.outerHTML.split( '<' ).join( '&lt;' ).split( '>' ).join( '&gt;' ) }</code>
+                </pre>            
+`
+            return value
+        }
+        // @ts-ignore
+        return typeof value === "object" && Object.keys( value ).length > 0 ? value[vastatePrint.getAttribute( 'obj' ).toString() ?? Object.keys( this.get() )[0]] : value
     }
 }
+
 // extend window interface
 declare global {
     interface Window {
