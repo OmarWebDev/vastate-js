@@ -75,6 +75,7 @@ class Vastate {
      */
     reloadDom() {
         this.reloadVastatePrints();
+        this.reloadVastateGroups();
         this.reloadVastateEachs();
     }
     /**
@@ -83,8 +84,8 @@ class Vastate {
      *
      * @private
      */
-    reloadVastatePrints() {
-        const vastatePrints = document.querySelectorAll(`vastate-print[state="${this.name}"], [vastate-print][state="${this.name}"]`);
+    reloadVastatePrints(parent = document.body) {
+        const vastatePrints = parent.querySelectorAll(parent.hasAttribute('vastate-print-group') || parent.tagName.toLowerCase() == "vastate-print-group" ? `vastate-print:not(vastate-print[state]), [vastate-print]:not([vastate-print][state])` : `vastate-print[state="${this.name}"], [vastate-print][state="${this.name}"]:not([vastate-group])`);
         vastatePrints.forEach((vastatePrint) => {
             if (this.isLoading) {
                 vastatePrint.innerHTML += Vastate.loadingTemplate;
@@ -106,8 +107,8 @@ class Vastate {
      *
      * @private
      */
-    reloadVastateEachs() {
-        const vastateEachs = document.querySelectorAll(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`);
+    reloadVastateEachs(parent = document.body) {
+        const vastateEachs = parent.querySelectorAll(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`);
         vastateEachs.forEach((vastateEach) => {
             while (vastateEach.children.length > 1) {
                 vastateEach.removeChild(vastateEach.lastElementChild);
@@ -115,10 +116,7 @@ class Vastate {
             const stateValueArr = Array.isArray(this.get()) ? this.get() : [];
             if (stateValueArr.length < 1) {
                 if (!this.isLoading) {
-                    // remove preloader from the page
-                    vastateEach.innerHTML = vastateEach.innerHTML.split(Vastate.loadingTemplate).join('');
-                    // remove all children except first one
-                    vastateEach.querySelectorAll('* + *').forEach((e) => e.remove());
+                    // TODO: Create function to reset vastate-each
                     return;
                 }
                 vastateEach.innerHTML += Vastate.loadingTemplate;
@@ -144,6 +142,10 @@ class Vastate {
             });
         });
     }
+    reloadVastateGroups() {
+        const groups = document.querySelectorAll(`vastate-print-group[state="${this.name}"], [vastate-print-group][state="${this.name}"]`);
+        groups.forEach((group) => this.reloadVastatePrints(group));
+    }
     /**
      * Gets the value that will be printed in Vastate print
      *
@@ -154,13 +156,18 @@ class Vastate {
     getVastatePrintValue(vastatePrint, value = this.get()) {
         var _a;
         if (typeof value === "object" && !vastatePrint.hasAttribute('obj')) {
-            document.body.style.background = "hsla(0,0%,90%,1)";
-            document.body.style.color = "hsla(0,0%,10%,.9)";
-            document.body.style.fontFamily = "arial";
-            document.body.innerHTML = `
-                
+            Vastate.throwError('You are trying to print an object without passing obj attribute in vastate print', vastatePrint);
+        }
+        // @ts-ignore
+        return typeof value === "object" && Object.keys(value).length > 0 ? value[(_a = vastatePrint.getAttribute('obj').toString()) !== null && _a !== void 0 ? _a : Object.keys(this.get())[0]] : value;
+    }
+    static throwError(error, element) {
+        document.body.style.background = "hsla(0,0%,90%,1)";
+        document.body.style.color = "hsla(0,0%,10%,.9)";
+        document.body.style.fontFamily = "arial";
+        document.body.innerHTML = `
                 <h1>Vastate JS Error</h1>
-                <strong>You are trying to print an object without passing obj attribute in vastate print</strong>
+                <strong>${error}</strong>
                 <br>
                 <strong>Helpful Info:</strong>
                 <br>
@@ -169,13 +176,16 @@ class Vastate {
   font-weight: bold;
   padding: 1rem;
   border-radius: 6px;">
-                <code>${vastatePrint.outerHTML.split('<').join('&lt;').split('>').join('&gt;')}</code>
+                <code>${element.outerHTML.split('<').join('&lt;').split('>').join('&gt;')}</code>
                 </pre>            
 `;
-            return value;
-        }
-        // @ts-ignore
-        return typeof value === "object" && Object.keys(value).length > 0 ? value[(_a = vastatePrint.getAttribute('obj').toString()) !== null && _a !== void 0 ? _a : Object.keys(this.get())[0]] : value;
+        throw new TypeError(`Vastate JS Error: ${error}`);
+    }
+    resetVastateEach(vastateEach) {
+        // remove preloader from the page
+        vastateEach.innerHTML = vastateEach.innerHTML.split(Vastate.loadingTemplate).join('');
+        // remove all children except first one
+        vastateEach.querySelectorAll('* + *').forEach((e) => e.remove());
     }
 }
 // apply vastate class to window so it can be

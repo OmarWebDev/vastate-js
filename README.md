@@ -2,9 +2,9 @@ A javascript library that can be used to print javascript variables to html easi
 
 [<img width="200" alt="Vastate JS" src="https://ik.imagekit.io/omarkhaled/My_Portfolio/prev_works/vastateLogo_-sR7dE5q5.svg?ik-sdk-version=javascript-1.4.3&updatedAt=1648420864822"/>](https://github.com/OmarWebDev/vastate-js/)
 # Vastate JS
-Sometimes you may want to create a simple project using html, css and js, but sometimes you will need to print or loop your javascript variables to the browser and when changed they need to be changed in the browser. Vastate JS will help you to do this easliy what you will need to do is just to change the state and it will be updated automaticly in browser
+Sometimes you may want to create a simple project using html, css and js, but sometimes you will need to print or loop your javascript variables to the browser and when changed they need to be changed in the browser. Vastate JS will help you to do this easily what you will need to do is just to change the state, and it will be updated automatically in browser
 
-## Instalation
+## Installation
 ---
 What you need to do is to link javascript file with html
 ```html
@@ -44,7 +44,7 @@ Now to define a state you will need to use Vastate object which take 2 arguments
 const SITE_TITLE = new Vastate('title', 'Hello World!')
 ```
 
-- title = the name of the state
+- title = state name
 - Hello World! = state value
 
 ### Print to the browser
@@ -56,10 +56,10 @@ Now we want to print the state in the browser you have 2 options to print it fir
 <!-- This prints 'Hello, Hello World!' in heading tag -->
 <h1 vastate-print state="title">Hello, {#VALUE#}</h1>
 ```
-Now you maybe thinking what is `{#VALUE#}` ? Well vastate js doesn't know where to print your state you must provide `{#VALUE#}` keyword so it will be replaced with state value
+Now you might be thinking what is `{#VALUE#}` ? Well vastate js doesn't know where to print your state you must provide `{#VALUE#}` keyword, so it will be replaced with state value
 
 
-Now you maybe have a object that has `key: value` how would you print it ? you will need to pass a attribute called obj that contain the key name, for example
+Now you maybe have an object that has `key: value` how would you print it ? you will need to pass an attribute called obj that contain the key name, for example
 
 JS:
 ```js
@@ -117,9 +117,83 @@ HTML:
 </main>
 
 ```
+
+## Grouping
+If you want to print the same state multiple times, 
+it's not a good idea to keep repeating state name every time you use vastate-print. 
+what if you wanted to change the state name? it will be hard to edit all of those vastate-print.
+Vastate JS provide you a way to make your vastate-prints be on the same state without 
+passing state attribute by using vastate-print-group tag/attribute for example:
+
+JS: 
+```js
+const title = new Vastate('title', 'Hello World!')
+const todo = new Vastate('todos',
+  {
+      name: 'Unit Test',
+      description: 'Test my js scripts',
+      status: 'completed'
+  }
+)
+```
+HTML:
+```html
+<main vastate-print-group state="todos">
+    <!-- Hello World! -->
+    <p vastate-print state="title">
+        Page Title: {#VALUE#}
+    </p>
+    
+    <!-- Unit Test -->
+    <p vastate-print obj="name">
+        Task Name: {#VALUE#}
+    </p>
+    
+    <!-- Test my js scripts -->
+    <p vastate-print obj="description">
+        Task Description: {#VALUE#}
+    </p>
+    
+    <!-- completed -->
+    <p vastate-print obj="status">
+        Task status: {#VALUE#}
+    </p>
+</main>
+
+<vastate-print-group state="todos">
+    <!-- Hello World! -->
+    <p vastate-print state="title">
+        Page Title: {#VALUE#}
+    </p>
+
+    <!-- Unit Test -->
+    <p vastate-print obj="name">
+        Task Name: {#VALUE#}
+    </p>
+
+    <!-- Test my js scripts -->
+    <p vastate-print obj="description">
+        Task Description: {#VALUE#}
+    </p>
+
+    <!-- completed -->
+    <p vastate-print obj="status">
+        Task status: {#VALUE#}
+    </p>
+</vastate-print-group>
+```
+you can see that it's not needed to pass the state attribute
+to vastate-print cause its already passed to vastate-print-group
+but if you wanted to print other state in this case you can use
+state attribute to print the other state normally like the first vastate-print that prints
+page title
+
+Notes:
+    - Grouping won't work with vastate-each
+
 ## Loop a state
 ---
-Now you have an array of objects that contain some data and you want to loop and print that array. to do it using vastate you will need to use either vastate-each tag or vastate-each attribute and pass the state attribute with the state name, For example
+Now you have an array of objects that contain some data, and you want to loop and print that array. to do it using vastate you will need to use either vastate-each tag or vastate-each attribute and pass the state attribute with the state name, For example
 
 JS:
 ```js
@@ -149,11 +223,11 @@ HTML:
     <h3 vastate-print obj="name">Task Name: {#VALUE#}</h3>
 </main>
 ```
-Now you see that when i used vastate-print i didn't passed the state name this is because when you use vastate-each vastate will know that every child vastate-print will be on the same state
+Now you see that when I used vastate-print I didn't pass the state name this is because when you use vastate-each vastate will know that every child vastate-print will be on the same state
 
 ## Set or Get the state in Javascript
 ---
-Now you maybe thinking how to get or set the state in javascript. well its very simple vastate provide 2 methods `get()` and `set()`
+Now you might be thinking how to get or set the state in javascript. well its very simple vastate provide 2 methods `get()` and `set()`
 - `get()` return current value of the state
 - `set(value)` set the value of the state to the given value and update the value in the browser
 
@@ -172,7 +246,7 @@ If you are using Ajax/Axios/Fetch API/XMLHttpRequest and want to show a preloade
 
 Vastate JS Provide you two method to do this 
 
-- setLoadingTemplate(template: string) - this function will take a HTML Template that will be used when loading is set to true
+- setLoadingTemplate(template: string) - this function will take an HTML Template that will be used when loading is set to true
 - setLoading(value: boolean) - this function will set loader state to true or false
 
 For example:
@@ -201,7 +275,7 @@ JS:
 
 HTML:
 ```HTML
-    <!-- This will print Loading in h1 tag and after 3 secconds will print users list -->
+    <!-- This will print Loading in h1 tag and after 3 seconds will print users list -->
     <ul vastate-each  state="users">
         <li hidden vastate-print obj="name"><span>{#VALUE#}</span></li>
     </ul>
