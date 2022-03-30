@@ -244,15 +244,17 @@ console.log(title.get()) // Hello Vastate
 ## Preloader
 If you are using Ajax/Axios/Fetch API/XMLHttpRequest and want to show a preloader to the user until the request is complete.
 
-Vastate JS Provide you two method to do this 
+Vastate JS Provide you three method to do this 
 
-- setLoadingTemplate(template: string) - this function will take an HTML Template that will be used when loading is set to true
+- static setLoadingTemplate(template: string) - this function will take an HTML Template that will be used when loading is set to true (Global)
+- non-static setLoadingTemplate(template: string) - this function will take an HTML Template that will be used when loading is set to true (For specific state)
 - setLoading(value: boolean) - this function will set loader state to true or false
 
 For example:
 
 JS: 
 ```JS
+    // set loading template globaly
     Vastate.setLoadingTemplate('<h1>Loading</h1>') // set loading template
     const users = new Vastate('users', [])
     users.setLoading(true) // set loading state to true
@@ -271,6 +273,7 @@ JS:
             name: 'test'
         },])
     }, 3000)
+    users.setLoadingTemplate(`loading users`) // set the loading template for users state only
 ```
 
 HTML:
@@ -285,6 +288,42 @@ Notes
 - when using preloading you should use hidden attribute with vastate-print if you didn't you will see `{#VALUE#}` printed in the browser with the preloader
 - Preloader will only work if the state has contains empty array
 - Preloader won't work good when using vastate-print with state that is not empty
+
+## Save the state
+if you want to save/restore the current state value to/from localStorage/sessionStorage,
+Vastate provide you a way to do it easily. there is 4 method that can be used
+- setSaveMode(saveMode: 'localStorage' | 'sessionStorage') - change the current save mode to the given mode (default mode: localStorage)
+- getSaveMode() - get the current save mode
+- save() - save the state to localStorage/sessionStorage
+- restore() - restore the state from localStorage/sessionStorage
+for example here is a simple todo app:
+  
+HTML:
+```html
+<ul vastate-each state="todos">
+    <li vastate-print obj="name">{#VALUE#}</li>
+</ul>
+<input type="text" />
+<button>Add todo</button>
+```
+JS:
+```JS
+    // create new state
+    const todos = new Vastate('todos', []).set([])
+    // restore state from localStorage (if there is no data in localStorage the method won't change the state value)
+    todos.restore()
+
+    const input = document.querySelector('input')
+    const button = document.querySelector('button')
+    button.addEventListener('click', () => {
+        // set new state value
+        todos.set( [ ...todos.get(), { name: input.value } ] )
+        // save the state to localStorage
+        todos.save()
+        input.value = ''
+    })
+```
+  
 ## Contributing
 ---
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

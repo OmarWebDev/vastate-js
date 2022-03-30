@@ -25,8 +25,22 @@ class Vastate {
          * @private
          */
         this.isLoading = false;
+        /**
+         * Loading template for specific state
+         *
+         * @private
+         */
+        this.loadingTemplate = Vastate.loadingTemplate;
+        /**
+         * Save mode is used to see where to save the state
+         *
+         * @private
+         */
+        this.saveMode = 'localStorage';
+        this.groupedVastatePrintsSelector = `vastate-print:not(vastate-print[state]), [vastate-print]:not([vastate-print][state])`;
         this.value = value;
         this.name = name;
+        this.vastatePrintsSelector = `vastate-print[state="${this.name}"], [vastate-print][state="${this.name}"]:not([vastate-group])`;
         this.reloadDom();
     }
     /**
@@ -41,7 +55,7 @@ class Vastate {
         return this;
     }
     /**
-     * Set loading template
+     * Set Global loading template
      *
      * @param loadingTemplate
      */
@@ -65,7 +79,6 @@ class Vastate {
             this.previousValue = this.value;
         this.value = value;
         this.reloadDom();
-        console.log(this.value, this.previousValue);
         return this;
     }
     /**
@@ -74,9 +87,9 @@ class Vastate {
      * @private
      */
     reloadDom() {
+        this.reloadVastateEachs();
         this.reloadVastatePrints();
         this.reloadVastateGroups();
-        this.reloadVastateEachs();
     }
     /**
      * Reload all vastate-print tags/attribute
@@ -85,13 +98,13 @@ class Vastate {
      * @private
      */
     reloadVastatePrints(parent = document.body) {
-        const vastatePrints = parent.querySelectorAll(parent.hasAttribute('vastate-print-group') || parent.tagName.toLowerCase() == "vastate-print-group" ? `vastate-print:not(vastate-print[state]), [vastate-print]:not([vastate-print][state])` : `vastate-print[state="${this.name}"], [vastate-print][state="${this.name}"]:not([vastate-group])`);
+        const vastatePrints = parent.querySelectorAll(parent.hasAttribute('vastate-print-group') || parent.tagName.toLowerCase() == "vastate-print-group" ? this.groupedVastatePrintsSelector : this.vastatePrintsSelector);
         vastatePrints.forEach((vastatePrint) => {
             if (this.isLoading) {
-                vastatePrint.innerHTML += Vastate.loadingTemplate;
+                vastatePrint.innerHTML += this.loadingTemplate;
             }
             else {
-                vastatePrint.innerHTML = vastatePrint.innerHTML.split(Vastate.loadingTemplate).join('');
+                vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.loadingTemplate).join('');
                 if (vastatePrint.hasAttribute('html')) {
                     vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.previousValue.toString()).join(this.getVastatePrintValue(vastatePrint));
                 }
@@ -110,16 +123,14 @@ class Vastate {
     reloadVastateEachs(parent = document.body) {
         const vastateEachs = parent.querySelectorAll(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`);
         vastateEachs.forEach((vastateEach) => {
-            while (vastateEach.children.length > 1) {
-                vastateEach.removeChild(vastateEach.lastElementChild);
-            }
+            this.resetVastateEach(vastateEach);
             const stateValueArr = Array.isArray(this.get()) ? this.get() : [];
             if (stateValueArr.length < 1) {
                 if (!this.isLoading) {
-                    // TODO: Create function to reset vastate-each
+                    this.resetVastateEach(vastateEach);
                     return;
                 }
-                vastateEach.innerHTML += Vastate.loadingTemplate;
+                vastateEach.innerHTML += this.loadingTemplate;
                 return;
             }
             stateValueArr === null || stateValueArr === void 0 ? void 0 : stateValueArr.forEach((val) => {
@@ -169,6 +180,7 @@ class Vastate {
                 <h1>Vastate JS Error</h1>
                 <strong>${error}</strong>
                 <br>
+                ${element ? `
                 <strong>Helpful Info:</strong>
                 <br>
                 <br>
@@ -177,18 +189,101 @@ class Vastate {
   padding: 1rem;
   border-radius: 6px;">
                 <code>${element.outerHTML.split('<').join('&lt;').split('>').join('&gt;')}</code>
-                </pre>            
+                </pre>` : ``}            
 `;
         throw new TypeError(`Vastate JS Error: ${error}`);
     }
     resetVastateEach(vastateEach) {
+        var _a;
         // remove preloader from the page
-        vastateEach.innerHTML = vastateEach.innerHTML.split(Vastate.loadingTemplate).join('');
+        vastateEach.innerHTML = vastateEach.innerHTML.split(this.loadingTemplate).join('');
         // remove all children except first one
         vastateEach.querySelectorAll('* + *').forEach((e) => e.remove());
+        console.log((_a = vastateEach.children[0]) === null || _a === void 0 ? void 0 : _a.setAttribute('hidden', ''));
+    }
+    /**
+     * Set loading template for specific state
+     *
+     * @param template
+     * @return this
+     */
+    setLoadingTemplate(template) {
+        this.loadingTemplate = template;
+        return this;
+    }
+    /**
+     * change current save mode
+     *
+     * @param saveMode
+     * @return this
+     */
+    setSaveMode(saveMode) {
+        this.saveMode = saveMode;
+        return this;
+    }
+    /**
+     * get current save mode
+     *
+     * @return saveMode
+     */
+    getSaveMode() {
+        return this.saveMode;
+    }
+    /**
+     * save current state to localStorage/sessionStorage
+     *
+     * @return this
+     */
+    save() {
+        const value = typeof this.get() == 'object' || Array.isArray(this.get()) ? JSON.stringify(this.get()) : this.get().toString();
+        switch (this.getSaveMode()) {
+            case "localStorage":
+                localStorage.setItem(this.name, value);
+                break;
+            case "sessionStorage":
+                sessionStorage.setItem(this.name, value);
+                break;
+            default:
+                Vastate.throwError('Unsupported save mode: ' + this.getSaveMode());
+                break;
+        }
+        return this;
+    }
+    /**
+     * restore the state from localStorage/sessionStorage
+     *
+     * @return this
+     */
+    restore() {
+        switch (this.getSaveMode()) {
+            case "localStorage":
+                if (localStorage.getItem(this.name))
+                    this.set(JSON.parse(localStorage.getItem(this.name)));
+                break;
+            case "sessionStorage":
+                if (sessionStorage.getItem(this.name))
+                    this.set(JSON.parse(sessionStorage.getItem(this.name)));
+                break;
+            default:
+                Vastate.throwError('Unsupported save mode: ' + this.getSaveMode());
+                break;
+        }
+        return this;
     }
 }
-// apply vastate class to window so it can be
-// called globally via 'window.Vastate' or Vastate
-window.Vastate = Vastate;
+/**
+ * Global Loading Template
+ *
+ * @private
+ */
+Vastate.loadingTemplate = '';
 export default Vastate;
+window.onload = () => {
+    // @ts-ignore
+    if (window.Vastate) {
+        // @ts-ignore
+        var Vastate = window.Vastate.default;
+        // @ts-ignore
+        delete window.Vastate;
+    }
+};

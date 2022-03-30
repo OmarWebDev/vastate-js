@@ -18,6 +18,9 @@ module.exports = {
     },
     output: {
         filename: 'vastate.js',
+        library: 'Vastate',
+        libraryExport: 'default',
+        libraryTarget: 'window',
         path: path.resolve(__dirname, 'dist'),
     },
 };
