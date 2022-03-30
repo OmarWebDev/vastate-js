@@ -296,6 +296,7 @@ Vastate provide you a way to do it easily. there is 4 method that can be used
 - getSaveMode() - get the current save mode
 - save() - save the state to localStorage/sessionStorage
 - restore() - restore the state from localStorage/sessionStorage
+
 for example here is a simple todo app:
   
 HTML:
