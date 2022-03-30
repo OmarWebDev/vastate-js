@@ -1,7 +1,7 @@
 {
   "name": "vastate-js",
   "entry": "index.js",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "license": "MIT",
   "scripts": {
     "build": "webpack && tsc src/vastate.ts --target es6",
@@ -11,10 +11,27 @@
     "type": "git",
     "url": "https://github.com/OmarWebDev/vastate-js.git"
   },
+  "keywords": [
+    "javascript",
+    "js",
+    "vastateJS",
+    "vastate-js",
+    "html",
+    "typescript",
+    "ts"
+  ],
   "devDependencies": {
     "ts-loader": "^9.2.8",
     "typescript": "^4.5.4",
     "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2"
+  },
+  "author": {
+    "name": "Omar Khaled",
+    "email": "omar.dev.work@outlook.com",
+    "url": "https://omar-khaled-portfolio.web.app/"
+  },
+  "bugs": {
+    "url": "https://github.com/OmarWebDev/vastate-js/issues"
   }
 }
