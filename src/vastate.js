@@ -180,7 +180,6 @@ class Vastate {
             stateValueArr === null || stateValueArr === void 0 ? void 0 : stateValueArr.forEach((val) => {
                 var _a;
                 const firstChild = document.querySelector(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`).querySelector(':scope > div');
-                console.log(firstChild);
                 const template = firstChild === null || firstChild === void 0 ? void 0 : firstChild.cloneNode(true);
                 // console.log(template)
                 // firstChild?.setAttribute( 'hidden', 'true' )

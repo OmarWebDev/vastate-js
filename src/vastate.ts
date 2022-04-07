@@ -227,7 +227,6 @@ class Vastate {
             }
             stateValueArr?.forEach( ( val: any ) => {
                 const firstChild = document.querySelector( `vastate-each[state="${ this.name }"], [vastate-each][state="${ this.name }"]` ).querySelector(':scope > div')
-                console.log( firstChild );
                 const template: any = firstChild?.cloneNode( true )
                 // console.log(template)
                 // firstChild?.setAttribute( 'hidden', 'true' )
