@@ -1,6 +1,6 @@
 /**
  * Name: Vastate.js
- * Version: 1.0
+ * Version: 1.2.0
  * License: MIT
  */
 type vastateValue = string | number | any[] | boolean | null
@@ -59,6 +59,17 @@ class Vastate {
     private loadingTemplate: string = Vastate.loadingTemplate;
 
     /**
+     * events will be used when created a new event
+     * using on method or triggering an existing event using trigger method
+     * there is a default event which is change that will reload the dom
+     *
+     * @private
+     */
+    private events: {[key: string]: CallableFunction} = {
+        "change": () => {}
+    }
+
+    /**
      * Save mode is used to see where to save the state
      *
      * @private
@@ -106,10 +117,17 @@ class Vastate {
     /**
      * Get current state value
      */
-    get() {
+    get(): vastateValue {
         return this.value
     }
 
+    /**
+     * get previous state value
+     *
+     */
+    getPreviousValue(): vastateValue {
+        return this.previousValue
+    }
     /**
      * Set state value
      *
@@ -120,8 +138,35 @@ class Vastate {
         if ( this.value != this.previousValue )
             this.previousValue = this.value
         this.value = value
+        this.trigger('change')
         this.reloadDom()
         return this
+    }
+
+    /**
+     * Create a new event that can be triggered
+     * using trigger method
+     *
+     * @param event
+     * @param callback
+     */
+    on(event: string, callback: CallableFunction): void {
+        this.events[event] = callback
+    }
+
+    /**
+     * Trigger a event that is created using on method
+     *
+     * @param event
+     * @param params
+     */
+    trigger(event: string, ...params: any[]) {
+        if (this.events[event])
+        {
+            this.events[event](...params)
+        } else {
+            Vastate.throwError(`Undefined event '${event}'. Did you created the event using 'on' method?`)
+        }
     }
 
     /**
@@ -150,10 +195,11 @@ class Vastate {
             } else {
                 vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.loadingTemplate ).join( '' )
                 if ( vastatePrint.hasAttribute( 'html' ) ) {
-
-                    vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.previousValue.toString() ).join( this.getVastatePrintValue( vastatePrint ) )
+                    // @ts-ignore
+                    vastatePrint.innerHTML = vastatePrint.innerHTML.split( vastatePrint.hasAttribute('obj') ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString() ).join( this.getVastatePrintValue( vastatePrint ) )
                 } else {
-                    vastatePrint.textContent = vastatePrint.textContent.split( this.previousValue.toString() ).join( this.getVastatePrintValue( vastatePrint ) )
+                    // @ts-ignore
+                    vastatePrint.textContent = vastatePrint.textContent.split( vastatePrint.hasAttribute('obj') && typeof this.previousValue === 'object' ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString() ).join( this.getVastatePrintValue( vastatePrint ) )
                 }
             }
         } )
