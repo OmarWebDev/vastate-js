@@ -179,9 +179,11 @@ class Vastate {
             }
             stateValueArr === null || stateValueArr === void 0 ? void 0 : stateValueArr.forEach((val) => {
                 var _a;
-                const firstChild = document.querySelector(`vastate-each[state="${this.name}"] > *, [vastate-each][state="${this.name}"] > *`);
+                const firstChild = document.querySelector(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`).querySelector(':scope > div');
+                console.log(firstChild);
                 const template = firstChild === null || firstChild === void 0 ? void 0 : firstChild.cloneNode(true);
-                firstChild === null || firstChild === void 0 ? void 0 : firstChild.setAttribute('hidden', 'true');
+                // console.log(template)
+                // firstChild?.setAttribute( 'hidden', 'true' )
                 template.removeAttribute('hidden');
                 if (template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute('vastate-print')) {
                     template.innerHTML = (_a = template.innerHTML) === null || _a === void 0 ? void 0 : _a.split(this.placeholder).join(this.getVastatePrintValue(template, val));
@@ -189,6 +191,7 @@ class Vastate {
                 else {
                     template === null || template === void 0 ? void 0 : template.querySelectorAll('vastate-print, [vastate-print]').forEach((pr) => {
                         var _a;
+                        console.log(pr);
                         pr.removeAttribute('hidden');
                         pr.innerHTML = (_a = pr.innerHTML) === null || _a === void 0 ? void 0 : _a.split(this.placeholder).join(this.getVastatePrintValue(pr, val));
                     });
@@ -242,7 +245,7 @@ class Vastate {
         // remove preloader from the page
         vastateEach.innerHTML = vastateEach.innerHTML.split(this.loadingTemplate).join('');
         // remove all children except first one
-        vastateEach.querySelectorAll('* + *').forEach((e) => e.remove());
+        vastateEach.querySelectorAll(':scope > *').forEach((e, i) => i !== 0 ? e.remove() : void 0);
         console.log((_a = vastateEach.children[0]) === null || _a === void 0 ? void 0 : _a.setAttribute('hidden', ''));
     }
     /**
@@ -326,8 +329,6 @@ window.onload = () => {
     // @ts-ignore
     if (window.Vastate) {
         // @ts-ignore
-        var Vastate = window.Vastate.default;
-        // @ts-ignore
-        delete window.Vastate;
+        // window.Vastate = window.Vastate.default;
     }
 };
