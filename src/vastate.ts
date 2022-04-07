@@ -1,6 +1,6 @@
 /**
  * Name: Vastate.js
- * Version: 1.2.0
+ * Version: 1.2.1
  * License: MIT
  */
 type vastateValue = string | number | any[] | boolean | null
@@ -226,15 +226,17 @@ class Vastate {
                 return
             }
             stateValueArr?.forEach( ( val: any ) => {
-                const firstChild = document.querySelector( `vastate-each[state="${ this.name }"] > *, [vastate-each][state="${ this.name }"] > *` )
-                const template: HTMLElement | undefined = firstChild?.cloneNode( true ) as HTMLElement
-
-                firstChild?.setAttribute( 'hidden', 'true' )
+                const firstChild = document.querySelector( `vastate-each[state="${ this.name }"], [vastate-each][state="${ this.name }"]` ).querySelector(':scope > div')
+                console.log( firstChild );
+                const template: any = firstChild?.cloneNode( true )
+                // console.log(template)
+                // firstChild?.setAttribute( 'hidden', 'true' )
                 template.removeAttribute( 'hidden' )
                 if ( template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute( 'vastate-print' ) ) {
                     template.innerHTML = template.innerHTML?.split( this.placeholder ).join( this.getVastatePrintValue( template, val ) )
                 } else {
                     template?.querySelectorAll( 'vastate-print, [vastate-print]' ).forEach( ( pr: HTMLElement ) => {
+                        console.log(pr)
                         pr.removeAttribute( 'hidden' )
                         pr.innerHTML = pr.innerHTML?.split( this.placeholder ).join( this.getVastatePrintValue( pr, val ) )
 
@@ -292,7 +294,7 @@ class Vastate {
         // remove preloader from the page
         vastateEach.innerHTML = vastateEach.innerHTML.split( this.loadingTemplate ).join( '' )
         // remove all children except first one
-        vastateEach.querySelectorAll( '* + *' ).forEach( ( e: HTMLElement ) => e.remove() )
+        vastateEach.querySelectorAll( ':scope > *' ).forEach( ( e: HTMLElement, i ) => i !== 0 ? e.remove() : void 0 )
         console.log(vastateEach.children[0]?.setAttribute('hidden', ''))
     }
 
@@ -375,8 +377,6 @@ window.onload = () => {
     // @ts-ignore
     if (window.Vastate) {
         // @ts-ignore
-        var Vastate = window.Vastate.default;
-        // @ts-ignore
-        delete window.Vastate;
+        // window.Vastate = window.Vastate.default;
     }
 }
