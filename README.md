@@ -324,7 +324,45 @@ JS:
         input.value = ''
     })
 ```
-  
+
+## Events
+What if you wanted to call a function every time you change the state value? 
+What if you wanted to make a custom event that will be triggered after a specific condition?
+
+With Vastate JS you can make this easily using 'on' and 'trigger' methods.
+
+- on(event: string, callback: CallableFunction)
+    - event: Event name (can be any name you want)
+    - callback: a function that will be called when the event is triggered
+- trigger(event: string, ...params)
+    - event: Event name that is created using 'on' method if the given event name is not found Vastate JS will throw error
+    - ...params: params that will be passed to the callback function that was passed using 'on' method when creating the event
+
+Here is an example
+
+HTML:
+```html
+<h1 vastate-print state="title">
+	{#VALUE#}
+</h1>
+```
+
+JS:
+```javascript
+const title = new Vastate('title', 'ERP')
+title.on('change', () => {
+    console.log('State Is Changed')
+})
+title.on('myEvent', (num) => {
+    // prints 'My Event is triggered num is: 25'
+    console.log('My Event is triggered num is: '+ num)
+})
+title.set('changing the state to some text') // this will trigger the 'change' event
+title.trigger('myEvent', 25) // this will trigger 'myEvent' event and pass '25' as a parameter
+```
+From the example you can see that there is an event that will be called everytime you use set method called "change"
+And there is an event that can be called using 'trigger' method and pass 25 as a parameter called 'myEvent'
+
 ## Contributing
 ---
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

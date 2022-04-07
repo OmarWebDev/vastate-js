@@ -32,6 +32,16 @@ class Vastate {
          */
         this.loadingTemplate = Vastate.loadingTemplate;
         /**
+         * events will be used when created a new event
+         * using on method or triggering an existing event using trigger method
+         * there is a default event which is change that will reload the dom
+         *
+         * @private
+         */
+        this.events = {
+            "change": () => { }
+        };
+        /**
          * Save mode is used to see where to save the state
          *
          * @private
@@ -69,6 +79,13 @@ class Vastate {
         return this.value;
     }
     /**
+     * get previous state value
+     *
+     */
+    getPreviousValue() {
+        return this.previousValue;
+    }
+    /**
      * Set state value
      *
      * @param value
@@ -78,8 +95,33 @@ class Vastate {
         if (this.value != this.previousValue)
             this.previousValue = this.value;
         this.value = value;
+        this.trigger('change');
         this.reloadDom();
         return this;
+    }
+    /**
+     * Create a new event that can be triggered
+     * using trigger method
+     *
+     * @param event
+     * @param callback
+     */
+    on(event, callback) {
+        this.events[event] = callback;
+    }
+    /**
+     * Trigger a event that is created using on method
+     *
+     * @param event
+     * @param params
+     */
+    trigger(event, ...params) {
+        if (this.events[event]) {
+            this.events[event](...params);
+        }
+        else {
+            Vastate.throwError(`Undefined event '${event}'. Did you created the event using 'on' method?`);
+        }
     }
     /**
      * Reload the DOM when value or loading state is changed
@@ -106,10 +148,12 @@ class Vastate {
             else {
                 vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.loadingTemplate).join('');
                 if (vastatePrint.hasAttribute('html')) {
-                    vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.previousValue.toString()).join(this.getVastatePrintValue(vastatePrint));
+                    // @ts-ignore
+                    vastatePrint.innerHTML = vastatePrint.innerHTML.split(vastatePrint.hasAttribute('obj') ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString()).join(this.getVastatePrintValue(vastatePrint));
                 }
                 else {
-                    vastatePrint.textContent = vastatePrint.textContent.split(this.previousValue.toString()).join(this.getVastatePrintValue(vastatePrint));
+                    // @ts-ignore
+                    vastatePrint.textContent = vastatePrint.textContent.split(vastatePrint.hasAttribute('obj') && typeof this.previousValue === 'object' ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString()).join(this.getVastatePrintValue(vastatePrint));
                 }
             }
         });
