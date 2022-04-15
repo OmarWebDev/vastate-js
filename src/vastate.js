@@ -1,3 +1,15 @@
+const style = document.createElement('style');
+style.innerHTML = `
+        [vastate-loader] *[vastate-print], 
+        [vastate-loader] vastate-print, 
+        [vastate-loader] *[vastate-print-group], 
+        [vastate-loader] vastate-print-group, 
+        [vastate-loader] *[vastate-each], 
+        [vastate-loader] vastate-each {
+            display: none !important;
+        }
+    `;
+document.head.appendChild(style);
 class Vastate {
     /**
      * initialize new state
@@ -52,6 +64,12 @@ class Vastate {
         this.name = name;
         this.vastatePrintsSelector = `vastate-print[state="${this.name}"], [vastate-print][state="${this.name}"]:not([vastate-group])`;
         this.reloadDom();
+    }
+    /**
+     * Remove vastate-loader attribute
+     */
+    static mount() {
+        style.remove();
     }
     /**
      * Set loading status
@@ -146,14 +164,14 @@ class Vastate {
                 vastatePrint.innerHTML += this.loadingTemplate;
             }
             else {
+                // @ts-ignore
+                const valueToBePrinted = vastatePrint.hasAttribute('obj') && typeof this.previousValue === 'object' ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString();
                 vastatePrint.innerHTML = vastatePrint.innerHTML.split(this.loadingTemplate).join('');
                 if (vastatePrint.hasAttribute('html')) {
-                    // @ts-ignore
-                    vastatePrint.innerHTML = vastatePrint.innerHTML.split(vastatePrint.hasAttribute('obj') ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString()).join(this.getVastatePrintValue(vastatePrint));
+                    vastatePrint.innerHTML = vastatePrint.innerHTML.split(valueToBePrinted).join(this.getVastatePrintValue(vastatePrint));
                 }
                 else {
-                    // @ts-ignore
-                    vastatePrint.textContent = vastatePrint.textContent.split(vastatePrint.hasAttribute('obj') && typeof this.previousValue === 'object' ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString()).join(this.getVastatePrintValue(vastatePrint));
+                    vastatePrint.textContent = vastatePrint.textContent.split(valueToBePrinted).join(this.getVastatePrintValue(vastatePrint));
                 }
             }
         });
@@ -179,10 +197,8 @@ class Vastate {
             }
             stateValueArr === null || stateValueArr === void 0 ? void 0 : stateValueArr.forEach((val) => {
                 var _a;
-                const firstChild = document.querySelector(`vastate-each[state="${this.name}"], [vastate-each][state="${this.name}"]`).querySelector(':scope > div');
+                const firstChild = document.querySelector(`vastate-each[state="${this.name}"] > *, [vastate-each][state="${this.name}"] > *`);
                 const template = firstChild === null || firstChild === void 0 ? void 0 : firstChild.cloneNode(true);
-                // console.log(template)
-                // firstChild?.setAttribute( 'hidden', 'true' )
                 template.removeAttribute('hidden');
                 if (template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute('vastate-print')) {
                     template.innerHTML = (_a = template.innerHTML) === null || _a === void 0 ? void 0 : _a.split(this.placeholder).join(this.getVastatePrintValue(template, val));
@@ -190,7 +206,6 @@ class Vastate {
                 else {
                     template === null || template === void 0 ? void 0 : template.querySelectorAll('vastate-print, [vastate-print]').forEach((pr) => {
                         var _a;
-                        console.log(pr);
                         pr.removeAttribute('hidden');
                         pr.innerHTML = (_a = pr.innerHTML) === null || _a === void 0 ? void 0 : _a.split(this.placeholder).join(this.getVastatePrintValue(pr, val));
                     });
@@ -240,12 +255,10 @@ class Vastate {
         throw new TypeError(`Vastate JS Error: ${error}`);
     }
     resetVastateEach(vastateEach) {
-        var _a;
         // remove preloader from the page
         vastateEach.innerHTML = vastateEach.innerHTML.split(this.loadingTemplate).join('');
         // remove all children except first one
         vastateEach.querySelectorAll(':scope > *').forEach((e, i) => i !== 0 ? e.remove() : void 0);
-        console.log((_a = vastateEach.children[0]) === null || _a === void 0 ? void 0 : _a.setAttribute('hidden', ''));
     }
     /**
      * Set loading template for specific state
@@ -324,10 +337,3 @@ class Vastate {
  */
 Vastate.loadingTemplate = '';
 export default Vastate;
-window.onload = () => {
-    // @ts-ignore
-    if (window.Vastate) {
-        // @ts-ignore
-        // window.Vastate = window.Vastate.default;
-    }
-};
