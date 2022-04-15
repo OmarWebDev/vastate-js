@@ -4,6 +4,22 @@ A javascript library that can be used to print javascript variables to html easi
 # Vastate JS
 Sometimes you may want to create a simple project using html, css and js, but sometimes you will need to print or loop your javascript variables to the browser and when changed they need to be changed in the browser. Vastate JS will help you to do this easily what you will need to do is just to change the state, and it will be updated automatically in browser
 
+#### Content
+- [Vastate JS](#vastate-js)
+    * [Installation](#installation)
+    * [Usage](#usage)
+        + [Print to the browser](#print-to-the-browser)
+        + [Print HTML State](#print-html-state)
+        + [Grouping](#grouping)
+        + [Loop a state](#loop-a-state)
+        + [Set or Get the state in Javascript](#set-or-get-the-state-in-javascript)
+        + [Preloader](#preloader)
+        + [Save the state](#save-the-state)
+        + [Events](#events)
+        + [Mounting (NEW)](#mounting)
+    * [Contributing](#contributing)
+    * [License](#license)
+
 ## Installation
 ---
 What you need to do is to link javascript file with html
@@ -118,7 +134,7 @@ HTML:
 
 ```
 
-## Grouping
+### Grouping
 If you want to print the same state multiple times, 
 it's not a good idea to keep repeating state name every time you use vastate-print. 
 what if you wanted to change the state name? it will be hard to edit all of those vastate-print.
@@ -191,8 +207,7 @@ page title
 Notes:
     - Grouping won't work with vastate-each
 
-## Loop a state
----
+### Loop a state
 Now you have an array of objects that contain some data, and you want to loop and print that array. to do it using vastate you will need to use either vastate-each tag or vastate-each attribute and pass the state attribute with the state name, For example
 
 JS:
@@ -225,8 +240,7 @@ HTML:
 ```
 Now you see that when I used vastate-print I didn't pass the state name this is because when you use vastate-each vastate will know that every child vastate-print will be on the same state
 
-## Set or Get the state in Javascript
----
+### Set or Get the state in Javascript
 Now you might be thinking how to get or set the state in javascript. well its very simple vastate provide 2 methods `get()` and `set()`
 - `get()` return current value of the state
 - `set(value)` set the value of the state to the given value and update the value in the browser
@@ -241,7 +255,7 @@ console.log(title.get()) // Hello World
 title.set('Hello Vastate') // set new value for the state
 console.log(title.get()) // Hello Vastate
 ```
-## Preloader
+### Preloader
 If you are using Ajax/Axios/Fetch API/XMLHttpRequest and want to show a preloader to the user until the request is complete.
 
 Vastate JS Provide you three method to do this 
@@ -289,7 +303,7 @@ Notes
 - Preloader will only work if the state has contains empty array
 - Preloader won't work good when using vastate-print with state that is not empty
 
-## Save the state
+### Save the state
 if you want to save/restore the current state value to/from localStorage/sessionStorage,
 Vastate provide you a way to do it easily. there is 4 method that can be used
 - setSaveMode(saveMode: 'localStorage' | 'sessionStorage') - change the current save mode to the given mode (default mode: localStorage)
@@ -325,7 +339,7 @@ JS:
     })
 ```
 
-## Events
+### Events
 What if you wanted to call a function every time you change the state value? 
 What if you wanted to make a custom event that will be triggered after a specific condition?
 
@@ -363,12 +377,17 @@ title.trigger('myEvent', 25) // this will trigger 'myEvent' event and pass '25' 
 From the example you can see that there is an event that will be called everytime you use set method called "change"
 And there is an event that can be called using 'trigger' method and pass 25 as a parameter called 'myEvent'
 
+### Mounting
+Now You will notice when you use either `vastate-each` or `vastate-print` you will see `{#VALUE#}` for about 0.1 second then it will disappear 
+to fix this problem you can use `mount()` method to do this what you need to do is to set `vastate-loader` attribute to `<body>` tag then put this code in the end of your javascript file
+```javascript
+Vastate.mount()
+```
+
 ## Contributing
----
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
 ## License
----
 [MIT](https://choosealicense.com/licenses/mit/)

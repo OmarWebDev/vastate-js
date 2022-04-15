@@ -1,10 +1,23 @@
 /**
  * Name: Vastate.js
- * Version: 1.2.1
+ * Version: 1.3.0
  * License: MIT
  */
 type vastateValue = string | number | any[] | boolean | null
 type saveMode = 'localStorage' | 'sessionStorage'
+
+const style = document.createElement('style')
+style.innerHTML = `
+        [vastate-loader] *[vastate-print], 
+        [vastate-loader] vastate-print, 
+        [vastate-loader] *[vastate-print-group], 
+        [vastate-loader] vastate-print-group, 
+        [vastate-loader] *[vastate-each], 
+        [vastate-loader] vastate-each {
+            display: none !important;
+        }
+    `
+document.head.appendChild(style)
 
 class Vastate {
 
@@ -91,6 +104,13 @@ class Vastate {
         this.name = name
         this.vastatePrintsSelector = `vastate-print[state="${ this.name }"], [vastate-print][state="${ this.name }"]:not([vastate-group])`
         this.reloadDom()
+    }
+
+    /**
+     * Remove vastate-loader attribute
+     */
+    static mount() {
+        style.remove()
     }
 
     /**
@@ -193,13 +213,14 @@ class Vastate {
             if ( this.isLoading ) {
                 vastatePrint.innerHTML += this.loadingTemplate
             } else {
+                // @ts-ignore
+                const valueToBePrinted = vastatePrint.hasAttribute('obj') && typeof this.previousValue === 'object' ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString()
+
                 vastatePrint.innerHTML = vastatePrint.innerHTML.split( this.loadingTemplate ).join( '' )
                 if ( vastatePrint.hasAttribute( 'html' ) ) {
-                    // @ts-ignore
-                    vastatePrint.innerHTML = vastatePrint.innerHTML.split( vastatePrint.hasAttribute('obj') ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString() ).join( this.getVastatePrintValue( vastatePrint ) )
+                    vastatePrint.innerHTML = vastatePrint.innerHTML.split( valueToBePrinted ).join( this.getVastatePrintValue( vastatePrint ) )
                 } else {
-                    // @ts-ignore
-                    vastatePrint.textContent = vastatePrint.textContent.split( vastatePrint.hasAttribute('obj') && typeof this.previousValue === 'object' ? this.previousValue[vastatePrint.getAttribute('obj')].toString() : this.previousValue.toString() ).join( this.getVastatePrintValue( vastatePrint ) )
+                    vastatePrint.textContent = vastatePrint.textContent.split( valueToBePrinted ).join( this.getVastatePrintValue( vastatePrint ) )
                 }
             }
         } )
@@ -226,16 +247,13 @@ class Vastate {
                 return
             }
             stateValueArr?.forEach( ( val: any ) => {
-                const firstChild = document.querySelector( `vastate-each[state="${ this.name }"], [vastate-each][state="${ this.name }"]` ).querySelector(':scope > div')
+                const firstChild = document.querySelector( `vastate-each[state="${ this.name }"] > *, [vastate-each][state="${ this.name }"] > *` )
                 const template: any = firstChild?.cloneNode( true )
-                // console.log(template)
-                // firstChild?.setAttribute( 'hidden', 'true' )
                 template.removeAttribute( 'hidden' )
                 if ( template.tagName.toLocaleLowerCase() == "vastate-print" || template.hasAttribute( 'vastate-print' ) ) {
                     template.innerHTML = template.innerHTML?.split( this.placeholder ).join( this.getVastatePrintValue( template, val ) )
                 } else {
                     template?.querySelectorAll( 'vastate-print, [vastate-print]' ).forEach( ( pr: HTMLElement ) => {
-                        console.log(pr)
                         pr.removeAttribute( 'hidden' )
                         pr.innerHTML = pr.innerHTML?.split( this.placeholder ).join( this.getVastatePrintValue( pr, val ) )
 
@@ -259,6 +277,7 @@ class Vastate {
      * @private
      */
     private getVastatePrintValue( vastatePrint: HTMLElement, value = this.get() ) {
+
         if ( typeof value === "object" && ! vastatePrint.hasAttribute( 'obj' ) ) {
 
             Vastate.throwError( 'You are trying to print an object without passing obj attribute in vastate print', vastatePrint )
@@ -294,7 +313,6 @@ class Vastate {
         vastateEach.innerHTML = vastateEach.innerHTML.split( this.loadingTemplate ).join( '' )
         // remove all children except first one
         vastateEach.querySelectorAll( ':scope > *' ).forEach( ( e: HTMLElement, i ) => i !== 0 ? e.remove() : void 0 )
-        console.log(vastateEach.children[0]?.setAttribute('hidden', ''))
     }
 
     /**
@@ -372,10 +390,3 @@ class Vastate {
     }
 }
 export default Vastate
-window.onload = () => {
-    // @ts-ignore
-    if (window.Vastate) {
-        // @ts-ignore
-        // window.Vastate = window.Vastate.default;
-    }
-}
