@@ -1,9 +1,8 @@
 #### Content
 - [Vastate JS](#vastate-js)
-      - [Content](#content)
   - [Difference between Vastate JS 2 and Vastate JS 1](#difference-between-vastate-js-2-and-vastate-js-1)
-  - [Installation](#installation)
-  - [Usage](#usage)
+  - [## Installation](#-installation)
+  - [## Usage](#-usage)
     - [Print to the browser](#print-to-the-browser)
     - [Print HTML State](#print-html-state)
     - [Grouping](#grouping)
@@ -18,7 +17,7 @@
 Sometimes you may want to create a simple project using html, css and js, but sometimes you will need to print or loop your javascript variables to the browser and when changed they need to be changed in the browser. Vastate JS will help you to do this easily what you will need to do is just to change the state, and it will be updated automatically in browser
 
 ## Difference between Vastate JS 2 and Vastate JS 1
- - Vastate JS 2 is using Shadow DOM to prevent the state from being changed in the browser, and it is more secure and faster than Vastate JS 1
+ - Vastate JS 2 is using Shadow DOM it is more secure and faster than Vastate JS 1
  - Vastate JS 2 provide a more easy way to print the state to the browser, and it is more easy to use than Vastate JS 1
  - Preloader, Events is not available in Vastate JS 2 yet, but it will be available in the future
  - Mounting is not available in Vastate JS 2 because you won't type `{#VALUE#}` in the html
