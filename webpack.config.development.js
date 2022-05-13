@@ -21,6 +21,7 @@ module.exports = {
         library: 'Vastate',
         libraryExport: 'default',
         libraryTarget: 'window',
+        sourceMapFilename: "vastate.js.map",
         path: path.resolve(__dirname, 'dist'),
     },
 };
