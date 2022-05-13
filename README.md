@@ -1,15 +1,11 @@
 A javascript library that can be used to print javascript variables to html easily
 
-[<img width="200" alt="Vastate JS" src="https://ik.imagekit.io/omarkhaled/My_Portfolio/prev_works/vastateLogo_-sR7dE5q5.svg?ik-sdk-version=javascript-1.4.3&updatedAt=1648420864822"/>](https://github.com/OmarWebDev/vastate-js/)
-# Vastate JS
-Sometimes you may want to create a simple project using html, css and js, but sometimes you will need to print or loop your javascript variables to the browser and when changed they need to be changed in the browser. Vastate JS will help you to do this easily what you will need to do is just to change the state, and it will be updated automatically in browser
-
 #### Content
 - [Vastate JS](#vastate-js)
       - [Content](#content)
   - [Difference between Vastate JS 2 and Vastate JS 1](#difference-between-vastate-js-2-and-vastate-js-1)
-  - [## Installation](#-installation)
-  - [## Usage](#-usage)
+  - [Installation](#installation)
+  - [Usage](#usage)
     - [Print to the browser](#print-to-the-browser)
     - [Print HTML State](#print-html-state)
     - [Grouping](#grouping)
@@ -18,6 +14,10 @@ Sometimes you may want to create a simple project using html, css and js, but so
     - [Save the state](#save-the-state)
   - [Contributing](#contributing)
   - [License](#license)
+
+[<img width="200" alt="Vastate JS" src="https://ik.imagekit.io/omarkhaled/My_Portfolio/prev_works/vastateLogo_-sR7dE5q5.svg?ik-sdk-version=javascript-1.4.3&updatedAt=1648420864822"/>](https://github.com/OmarWebDev/vastate-js/)
+# Vastate JS
+Sometimes you may want to create a simple project using html, css and js, but sometimes you will need to print or loop your javascript variables to the browser and when changed they need to be changed in the browser. Vastate JS will help you to do this easily what you will need to do is just to change the state, and it will be updated automatically in browser
 
 ## Difference between Vastate JS 2 and Vastate JS 1
  - Vastate JS 2 is using Shadow DOM to prevent the state from being changed in the browser, and it is more secure and faster than Vastate JS 1
