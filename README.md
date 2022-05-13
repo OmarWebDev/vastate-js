@@ -1,5 +1,3 @@
-A javascript library that can be used to print javascript variables to html easily
-
 #### Content
 - [Vastate JS](#vastate-js)
       - [Content](#content)
