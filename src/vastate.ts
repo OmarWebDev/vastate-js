@@ -127,8 +127,6 @@ class MultiVastate {
     private states: Vastate[] = []
     constructor(selector: string, defaultValue: VaValue) {
         document.querySelectorAll<VaPrint | VaEach>(selector).forEach(state => {
-            console.log(defaultValue);
-            
             this.states.push(new Vastate(state, defaultValue))
         })
     }
