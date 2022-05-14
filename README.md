@@ -1,8 +1,8 @@
 #### Content
 - [Vastate JS](#vastate-js)
   - [Difference between Vastate JS 2 and Vastate JS 1](#difference-between-vastate-js-2-and-vastate-js-1)
-  - [## Installation](#-installation)
-  - [## Usage](#-usage)
+  - [Installation](#installation)
+  - [Usage](#usage)
     - [Print to the browser](#print-to-the-browser)
     - [Print HTML State](#print-html-state)
     - [Grouping](#grouping)
@@ -175,8 +175,8 @@ HTML:
 ```
 
 Notes:
-    - Grouping won't work with `va-each`
-    - Events handlers won't work with `va-print-group` currently, but it will be available in the future
+- Grouping won't work with `va-each`
+- Events handlers won't work with `va-print-group` currently, but it will be available in the future
 
 There is another way to group states, you can use `multiple()` methods to group states
 
@@ -267,7 +267,9 @@ for example here is a simple todo app:
 HTML:
 ```html
 <va-each id="todos">
-    <va-print key="name"></va-print>
+    <template>
+        <va-print key="name"></va-print>
+    </template>
 </va-each>
 <input type="text" />
 <button>Add todo</button>
@@ -275,7 +277,7 @@ HTML:
 JS:
 ```JS
     // create new state
-    const todos = new Vastate('todos', []).set([])
+    const todos = new Vastate('todos', [])
     // restore state from localStorage (if there is no data in localStorage the method won't change the state value)
     todos.load()
 
