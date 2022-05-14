@@ -66,5 +66,15 @@ declare class Vastate {
      * @returns Returns the Vastate instance
      */
     load(): this;
+    static multiple(selector: string, defaultValue: VaValue): MultiVastate;
+}
+declare class MultiVastate {
+    private states;
+    constructor(selector: string, defaultValue: VaValue);
+    get value(): VaValue[];
+    set value(value: VaValue);
+    save(): this;
+    load(): this;
+    setSaveStorage(storage: Storage): this;
 }
 export default Vastate;
