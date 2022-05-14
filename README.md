@@ -106,10 +106,14 @@ HTML:
     </li>
 
     <!-- 35 -->
-    <li vastate-print state="person" obj="age">{#VALUE#}</li>
+    <li>
+        <va-print id='person' key='age'></va-print>
+    </li>
 
     <!-- Male -->
-    <li vastate-print state="person" obj="gender">{#VALUE#}</li>
+    <li>
+        <va-print id='person' key='gender'></va-print>
+    </li>
 </ul>
 ```
 
@@ -172,6 +176,36 @@ HTML:
 
 Notes:
     - Grouping won't work with `va-each`
+    - Events handlers won't work with `va-print-group` currently, but it will be available in the future
+
+There is another way to group states, you can use `multiple()` methods to group states
+
+JS:
+```js
+const person = Vastate.multiple('va-print', {
+            name: 'ahmed',
+            age: '23',
+            job: 'developer',
+            school: 'school',
+            home: 'home',
+        });
+```
+
+HTML:
+```html
+    <!-- ahmed -->
+    <va-print key="name"></va-print>
+    <!-- 23 -->
+    <va-print key="age" ></va-print>
+    <!-- developer -->
+    <va-print key="job" ></va-print>
+    <!-- school -->
+    <va-print key="school" ></va-print>
+    <!-- home -->
+    <va-print key="home" ></va-print>
+```
+
+In the above example you can see that instead of the state name there is `va-print` string, this means it will select all elements with tag `va-print` and print the state value to the browser, also you can use any query selector (id, class, etc) to select the elements
 
 ### Loop a state
 If you want to loop a state you can use the `va-each` html element which takes 1 attribute `id` that will be used when creating the state using Vastate object, from the example below you can see how to loop the state `todos` and print the state value in the browser using `va-print` element please note that `va-each` takes a template element as a child element and the template element will be used to print the state value in the browser

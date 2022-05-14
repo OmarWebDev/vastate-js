@@ -2,10 +2,10 @@
   "name": "vastate-js",
   "description": "A javascript library that can be used to print javascript variables to html easily",
   "entry": "index.js",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "license": "MIT",
   "scripts": {
-    "build": "webpack && tsc src/vastate.ts --target es2022 --outDir lib --declaration --emitDeclarationOnly",
+    "build": "webpack && tsc src/vastate.ts --target es2022 --outDir lib --declaration",
     "dev": "webpack --config webpack.config.development.js --watch"
   },
   "repository": {
