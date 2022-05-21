@@ -9,6 +9,7 @@
     - [Loop a state](#loop-a-state)
     - [Set or Get the state in Javascript](#set-or-get-the-state-in-javascript)
     - [Save the state](#save-the-state)
+    - [Events](#events)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -291,6 +292,52 @@ JS:
         input.value = ''
     })
 ```
+
+### Events
+If you used `va-each` you won't be able to add events to html elements inside it (click, mouseover, etc) that is because the elements inside `va-each` is inside a shadow dom and you can't add events to it.
+
+Vastate JS provide you a way to add events to the elements inside `va-each` using `va-event` and `va-callback` html attribute.
+And use `on` method to create events handlers
+
+`on` method takes 2 arguments, the first argument is the event name and the second argument is an object contains callback functions that will be called when the event is triggered
+
+For example
+
+HTML:
+```html
+<va-each id="todos">
+    <template>
+        <!-- This will call increament method when clicking it -->
+        <button va-event="click" va-callback="log">Click Me</button>
+        <!-- you can also use shorthand one -->
+        <button va-event="click:log">Click Me</button>
+
+        <va-print key="name"></va-print>
+    </template>
+</va-each>
+```
+
+```js
+const todos = new Vastate('todos', [
+                {
+                    name: 'Unit Test'
+                },
+                {
+                    name: 'Learn php'
+                },
+                {
+                    name: 'learn c#'
+                },
+            ])
+// here we have a callback function that will be called when the event is triggered 
+// in this case when the button is clicked we should see `123` in the console
+todos.on('click', {
+    log: function() {
+        console.log(123)
+    }
+})
+```
+**Note: Events in Vastate 2 is not the same as Vastate JS 1**
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

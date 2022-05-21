@@ -56,4 +56,6 @@ export default class VaPrint extends HTMLElement {
             this.shadowRoot.textContent = valueToBePrinted;
     }
 
+    signEvent() {}
+
 }
