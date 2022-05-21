@@ -122,6 +122,11 @@ class Vastate {
         return new MultiVastate(selector, defaultValue)
     }
 
+    public on(event: string, callbacks: {[key: string]: CallableFunction}): this {
+        this.element.signEvent(event, callbacks)
+        return this
+    }
+
 }
 class MultiVastate {
     private states: Vastate[] = []

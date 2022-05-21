@@ -67,6 +67,9 @@ declare class Vastate {
      */
     load(): this;
     static multiple(selector: string, defaultValue: VaValue): MultiVastate;
+    on(event: string, callbacks: {
+        [key: string]: CallableFunction;
+    }): this;
 }
 declare class MultiVastate {
     private states;

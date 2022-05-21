@@ -8,4 +8,5 @@ export default class VaPrint extends HTMLElement {
     get key(): string | false;
     set value(value: VaValue);
     render(): void;
+    signEvent(): void;
 }
